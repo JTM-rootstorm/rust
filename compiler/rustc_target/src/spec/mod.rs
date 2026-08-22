@@ -1798,6 +1798,7 @@ supported_targets! {
     ("armv7-unknown-linux-uclibceabihf", armv7_unknown_linux_uclibceabihf),
 
     ("x86_64-unknown-none", x86_64_unknown_none),
+    ("x86_64-unknown-wyrmroot", x86_64_unknown_wyrmroot),
 
     ("aarch64-unknown-teeos", aarch64_unknown_teeos),
 
@@ -1840,6 +1841,28 @@ supported_targets! {
     ("x86_64-unknown-linux-gnuasan", x86_64_unknown_linux_gnuasan),
     ("x86_64-unknown-linux-gnumsan", x86_64_unknown_linux_gnumsan),
     ("x86_64-unknown-linux-gnutsan", x86_64_unknown_linux_gnutsan),
+}
+
+#[cfg(test)]
+mod wyrmroot_target_tests {
+    use super::{Os, PanicStrategy, RelocModel, targets};
+
+    #[test]
+    fn x86_64_unknown_wyrmroot_is_a_static_non_unix_target() {
+        let target = targets::x86_64_unknown_wyrmroot::target();
+
+        assert_eq!(target.options.os, Os::Wyrmroot);
+        assert!(target.options.families.is_empty());
+        assert!(!target.options.dynamic_linking);
+        assert_eq!(target.options.relocation_model, RelocModel::Static);
+        assert!(!target.options.position_independent_executables);
+        assert!(!target.options.static_position_independent_executables);
+        assert!(!target.options.has_thread_local);
+        assert!(!target.options.eh_frame_header);
+        assert_eq!(target.options.panic_strategy, PanicStrategy::Abort);
+        assert_eq!(target.metadata.std, Some(false));
+        assert_eq!(target.options.linker.as_deref(), Some("rust-lld"));
+    }
 }
 
 /// Cow-Vec-Str: Cow<'static, [Cow<'static, str>]>
@@ -2026,6 +2049,7 @@ crate::target_spec_enum! {
         Wasi = "wasi",
         WatchOs = "watchos",
         Windows = "windows",
+        Wyrmroot = "wyrmroot",
         Xous = "xous",
         Zkvm = "zkvm",
         Unknown = "unknown",
