@@ -1865,8 +1865,12 @@ mod wyrmroot_target_tests {
         assert_eq!(target.options.linker.as_deref(), Some("rust-lld"));
         assert_eq!(
             target.options.features,
-            "-mmx,-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2,+soft-float"
+            "-x87,-fxsr,-mmx,-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2,+soft-float"
         );
+        for (disabled, enabled) in [("-x87", "+x87"), ("-fxsr", "+fxsr")] {
+            assert!(target.options.features.split(',').any(|entry| entry == disabled));
+            assert!(!target.options.features.split(',').any(|entry| entry == enabled));
+        }
     }
 }
 

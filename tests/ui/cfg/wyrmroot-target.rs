@@ -18,3 +18,9 @@ compile_error!("the Wyrmroot target must not claim cfg(unix)");
 
 #[cfg(target_family = "unix")]
 compile_error!("the Wyrmroot target must not claim target_family=unix");
+
+#[cfg(target_feature = "x87")]
+compile_error!("the Wyrmroot target must not advertise target_feature=x87");
+
+#[cfg(target_feature = "fxsr")]
+compile_error!("the Wyrmroot target must not advertise target_feature=fxsr");

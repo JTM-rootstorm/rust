@@ -27,7 +27,9 @@ pub(crate) fn target() -> Target {
             os: Os::Wyrmroot,
             cpu: "x86-64".into(),
             rustc_abi: Some(RustcAbi::Softfloat),
-            features: "-mmx,-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2,+soft-float".into(),
+            features:
+                "-x87,-fxsr,-mmx,-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2,+soft-float"
+                    .into(),
             linker_flavor: LinkerFlavor::Gnu(Cc::No, Lld::Yes),
             linker: Some("rust-lld".into()),
             dynamic_linking: false,
