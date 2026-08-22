@@ -6,7 +6,7 @@
 // the Rust target identity and all `target_os` cfgs remain Wyrmroot-specific.
 
 use crate::spec::{
-    Arch, Cc, LinkerFlavor, Lld, Os, PanicStrategy, RelocModel, StackProbeType, Target,
+    Arch, Cc, LinkerFlavor, Lld, Os, PanicStrategy, RelocModel, RustcAbi, StackProbeType, Target,
     TargetMetadata, TargetOptions,
 };
 
@@ -26,6 +26,8 @@ pub(crate) fn target() -> Target {
         options: TargetOptions {
             os: Os::Wyrmroot,
             cpu: "x86-64".into(),
+            rustc_abi: Some(RustcAbi::Softfloat),
+            features: "-mmx,-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2,+soft-float".into(),
             linker_flavor: LinkerFlavor::Gnu(Cc::No, Lld::Yes),
             linker: Some("rust-lld".into()),
             dynamic_linking: false,

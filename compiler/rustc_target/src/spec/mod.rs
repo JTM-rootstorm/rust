@@ -1845,7 +1845,7 @@ supported_targets! {
 
 #[cfg(test)]
 mod wyrmroot_target_tests {
-    use super::{Os, PanicStrategy, RelocModel, targets};
+    use super::{Os, PanicStrategy, RelocModel, RustcAbi, targets};
 
     #[test]
     fn x86_64_unknown_wyrmroot_is_a_static_non_unix_target() {
@@ -1860,8 +1860,13 @@ mod wyrmroot_target_tests {
         assert!(!target.options.has_thread_local);
         assert!(!target.options.eh_frame_header);
         assert_eq!(target.options.panic_strategy, PanicStrategy::Abort);
+        assert_eq!(target.options.rustc_abi, Some(RustcAbi::Softfloat));
         assert_eq!(target.metadata.std, Some(false));
         assert_eq!(target.options.linker.as_deref(), Some("rust-lld"));
+        assert_eq!(
+            target.options.features,
+            "-mmx,-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2,+soft-float"
+        );
     }
 }
 
