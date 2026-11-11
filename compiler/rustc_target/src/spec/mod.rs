@@ -1845,7 +1845,7 @@ supported_targets! {
 
 #[cfg(test)]
 mod wyrmroot_target_tests {
-    use super::{Os, PanicStrategy, RelocModel, RustcAbi, targets};
+    use super::{Os, PanicStrategy, RelocModel, targets};
 
     #[test]
     fn x86_64_unknown_wyrmroot_is_a_static_non_unix_target() {
@@ -1860,17 +1860,13 @@ mod wyrmroot_target_tests {
         assert!(!target.options.has_thread_local);
         assert!(!target.options.eh_frame_header);
         assert_eq!(target.options.panic_strategy, PanicStrategy::Abort);
-        assert_eq!(target.options.rustc_abi, Some(RustcAbi::Softfloat));
+        // The SysV x86-64 psABI: the default x86 ABI, with no feature turned
+        // off, so `float`/`double` travel in SSE registers like C's.
+        assert_eq!(target.options.rustc_abi, None);
+        assert_eq!(target.options.cpu, "x86-64");
         assert_eq!(target.metadata.std, Some(false));
         assert_eq!(target.options.linker.as_deref(), Some("rust-lld"));
-        assert_eq!(
-            target.options.features,
-            "-x87,-fxsr,-mmx,-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2,+soft-float"
-        );
-        for (disabled, enabled) in [("-x87", "+x87"), ("-fxsr", "+fxsr")] {
-            assert!(target.options.features.split(',').any(|entry| entry == disabled));
-            assert!(!target.options.features.split(',').any(|entry| entry == enabled));
-        }
+        assert_eq!(target.options.features, "");
     }
 }
 

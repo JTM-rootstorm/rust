@@ -19,8 +19,14 @@ compile_error!("the Wyrmroot target must not claim cfg(unix)");
 #[cfg(target_family = "unix")]
 compile_error!("the Wyrmroot target must not claim target_family=unix");
 
-#[cfg(target_feature = "x87")]
-compile_error!("the Wyrmroot target must not advertise target_feature=x87");
+// The SysV x86-64 psABI baseline: x87, FXSAVE, SSE and SSE2, nothing wider.
+#[cfg(not(all(
+    target_feature = "x87",
+    target_feature = "fxsr",
+    target_feature = "sse",
+    target_feature = "sse2"
+)))]
+compile_error!("the Wyrmroot target must advertise the x86-64 baseline features");
 
-#[cfg(target_feature = "fxsr")]
-compile_error!("the Wyrmroot target must not advertise target_feature=fxsr");
+#[cfg(any(target_feature = "sse3", target_feature = "avx"))]
+compile_error!("the Wyrmroot target must not go beyond or below the x86-64 baseline");

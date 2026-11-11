@@ -1,12 +1,13 @@
 // Native x86-64 target for Wyrmroot primordial userspace.
 //
-// Wyrmroot uses the SysV x86-64 ABI and static ELF executables. LLVM does not
-// need OS-specific lowering for that restricted early-userspace model, so the
-// generic `none-elf` LLVM triple is used only as the code-generation backend;
-// the Rust target identity and all `target_os` cfgs remain Wyrmroot-specific.
+// Wyrmroot uses the SysV x86-64 psABI (hardware floating point) and static ELF
+// executables. LLVM does not need OS-specific lowering for that restricted
+// early-userspace model, so the generic `none-elf` LLVM triple is used only as
+// the code-generation backend; the Rust target identity and all `target_os`
+// cfgs remain Wyrmroot-specific.
 
 use crate::spec::{
-    Arch, Cc, LinkerFlavor, Lld, Os, PanicStrategy, RelocModel, RustcAbi, StackProbeType, Target,
+    Arch, Cc, LinkerFlavor, Lld, Os, PanicStrategy, RelocModel, StackProbeType, Target,
     TargetMetadata, TargetOptions,
 };
 
@@ -25,11 +26,9 @@ pub(crate) fn target() -> Target {
         arch: Arch::X86_64,
         options: TargetOptions {
             os: Os::Wyrmroot,
+            // The SysV x86-64 psABI with the x86-64 baseline (SSE2, x87):
+            // Deepwyrm saves each user thread's x87/SSE/AVX state.
             cpu: "x86-64".into(),
-            rustc_abi: Some(RustcAbi::Softfloat),
-            features:
-                "-x87,-fxsr,-mmx,-sse,-sse2,-sse3,-ssse3,-sse4.1,-sse4.2,-avx,-avx2,+soft-float"
-                    .into(),
             linker_flavor: LinkerFlavor::Gnu(Cc::No, Lld::Yes),
             linker: Some("rust-lld".into()),
             dynamic_linking: false,
